@@ -1,0 +1,393 @@
+queries:
+  # ─── state.db / sessions ─────────────────────────────────────
+  - metric: sessions_hourly_count
+    type: gauge
+    db: state.db
+    description: Number of sessions started per hour
+    sql: |
+      SELECT
+        strftime('%Y-%m-%dT%H:00:00Z', datetime(started_at, 'unixepoch')) AS hour,
+        COUNT(*) AS value
+      FROM sessions
+      WHERE started_at > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY hour
+      ORDER BY hour DESC
+    labels: [hour]
+    value: value
+
+  - metric: sessions_total
+    type: gauge
+    db: state.db
+    description: Total sessions in database
+    sql: SELECT COUNT(*) AS value FROM sessions
+    labels: []
+    value: value
+
+  - metric: sessions_by_model
+    type: gauge
+    db: state.db
+    description: Sessions grouped by model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model, COUNT(*) AS value
+      FROM sessions
+      WHERE started_at > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: sessions_avg_tokens
+    type: gauge
+    db: state.db
+    description: Average total tokens per session (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(AVG(COALESCE(input_tokens,0)+COALESCE(output_tokens,0)),2) AS value
+      FROM sessions
+      WHERE started_at > strftime('%s', datetime('now', '-7 day'))
+        AND (input_tokens+output_tokens) > 0
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: sessions_estimated_cost_usd
+    type: gauge
+    db: state.db
+    description: Estimated cost per session model (last 7 days sum)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(SUM(COALESCE(estimated_cost_usd,0)), 4) AS value
+      FROM sessions
+      WHERE started_at > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: sessions_end_reason_distribution
+    type: gauge
+    db: state.db
+    description: Distribution of session end reasons (last 7 days)
+    sql: |
+      SELECT COALESCE(end_reason, 'unknown') AS reason, COUNT(*) AS value
+      FROM sessions
+      WHERE started_at > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY end_reason
+    labels: [reason]
+    value: value
+
+  # ─── state.db / messages ─────────────────────────────────────
+  - metric: messages_hourly_count
+    type: gauge
+    db: state.db
+    description: Messages per hour (last 7 days)
+    sql: |
+      SELECT strftime('%Y-%m-%dT%H:00:00Z', datetime(timestamp, 'unixepoch')) AS hour,
+             COUNT(*) AS value
+      FROM messages
+      WHERE timestamp > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY hour
+    labels: [hour]
+    value: value
+
+  - metric: messages_by_role
+    type: gauge
+    db: state.db
+    description: Message count by role (last 7 days)
+    sql: |
+      SELECT COALESCE(role, 'unknown') AS role, COUNT(*) AS value
+      FROM messages
+      WHERE timestamp > strftime('%s', datetime('now', '-7 day'))
+      GROUP BY role
+    labels: [role]
+    value: value
+
+  # ─── metrics.db / executions ──────────────────────────────────
+  - metric: executions_daily_count
+    type: gauge
+    db: metrics.db
+    description: Daily executions count
+    sql: |
+      SELECT date(timestamp) AS day, COUNT(*) AS value
+      FROM executions
+      WHERE timestamp > datetime('now', '-30 day')
+      GROUP BY day
+    labels: [day]
+    value: value
+
+  - metric: executions_daily_tokens
+    type: gauge
+    db: metrics.db
+    description: Daily total tokens
+    sql: |
+      SELECT date(timestamp) AS day,
+             SUM(COALESCE(total_tokens, 0)) AS value
+      FROM executions
+      WHERE timestamp > datetime('now', '-30 day')
+      GROUP BY day
+    labels: [day]
+    value: value
+
+  - metric: executions_daily_cost_usd
+    type: gauge
+    db: metrics.db
+    description: Daily cost in USD
+    sql: |
+      SELECT date(timestamp) AS day,
+             ROUND(SUM(COALESCE(cost_usd, 0)), 4) AS value
+      FROM executions
+      WHERE timestamp > datetime('now', '-30 day')
+      GROUP BY day
+    labels: [day]
+    value: value
+
+  - metric: executions_avg_duration_seconds
+    type: gauge
+    db: metrics.db
+    description: Average execution duration per model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(AVG(COALESCE(execution_time_s, 0)), 2) AS value
+      FROM executions
+      WHERE timestamp > datetime('now', '-7 day')
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: executions_success_rate
+    type: gauge
+    db: metrics.db
+    description: Success ratio per model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(100.0 * SUM(success) / MAX(COUNT(*), 1), 2) AS value
+      FROM executions
+      WHERE timestamp > datetime('now', '-7 day')
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  # ─── metrics.db / tool_calls ────────────────────────────────
+  - metric: tool_calls_total
+    type: gauge
+    db: metrics.db
+    description: Total tool calls by name (last 7 days)
+    sql: |
+      SELECT COALESCE(tool_name, 'unknown') AS tool, COUNT(*) AS value
+      FROM tool_calls
+      WHERE timestamp > datetime('now', '-7 day')
+      GROUP BY tool_name
+    labels: [tool]
+    value: value
+
+  # ─── metrics.db / daily_stats ───────────────────────────────
+  - metric: daily_stats_total_executions
+    type: gauge
+    db: metrics.db
+    description: Total executions from daily rollup
+    sql: |
+      SELECT date AS day, total_executions AS value
+      FROM daily_stats
+      WHERE date > date('now', '-30 day')
+      ORDER BY date
+    labels: [day]
+    value: value
+
+  - metric: daily_stats_error_count
+    type: gauge
+    db: metrics.db
+    description: Error count from daily rollup
+    sql: |
+      SELECT date AS day, error_count AS value
+      FROM daily_stats
+      WHERE date > date('now', '-30 day')
+      ORDER BY date
+    labels: [day]
+    value: value
+
+  # ─── ollama_usage.db / usage_calls ────────────────────────────
+  - metric: ollama_calls_hourly
+    type: gauge
+    db: ollama_usage.db
+    description: Ollama calls per hour
+    sql: |
+      SELECT strftime('%Y-%m-%dT%H:00:00Z', timestamp_utc) AS hour,
+             COUNT(*) AS value
+      FROM usage_calls
+      WHERE timestamp_utc > datetime('now', '-7 day')
+      GROUP BY hour
+    labels: [hour]
+    value: value
+
+  - metric: ollama_calls_by_model
+    type: gauge
+    db: ollama_usage.db
+    description: Ollama calls by model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model, COUNT(*) AS value
+      FROM usage_calls
+      WHERE timestamp_utc > datetime('now', '-7 day')
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: ollama_avg_latency_ms
+    type: gauge
+    db: ollama_usage.db
+    description: Average Ollama latency by model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(AVG(COALESCE(duration_ms, 0)), 2) AS value
+      FROM usage_calls
+      WHERE timestamp_utc > datetime('now', '-7 day')
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  - metric: ollama_estimated_cost
+    type: gauge
+    db: ollama_usage.db
+    description: Estimated Ollama cost by model (last 7 days)
+    sql: |
+      SELECT COALESCE(model, 'unknown') AS model,
+             ROUND(SUM(COALESCE(estimated_cost, 0)), 4) AS value
+      FROM usage_calls
+      WHERE timestamp_utc > datetime('now', '-7 day')
+      GROUP BY model
+    labels: [model]
+    value: value
+
+  # ─── ollama_usage.db / usage_status ─────────────────────────
+  - metric: ollama_budget_remaining
+    type: gauge
+    db: ollama_usage.db
+    description: Latest remaining budget
+    sql: |
+      SELECT COALESCE(tier, 'pro') AS tier,
+             COALESCE(session_remaining, 0) AS session_remaining,
+             COALESCE(weekly_remaining, 0) AS weekly_remaining
+      FROM usage_status
+      ORDER BY timestamp_utc DESC
+      LIMIT 1
+    labels: [tier]
+    value: session_remaining
+
+  # ─── cron_logs.db / cron_runs ─────────────────────────────────
+  - metric: cron_runs_by_status
+    type: gauge
+    db: db/cron_logs.db
+    description: Cron runs grouped by status (last 7 days)
+    sql: |
+      SELECT COALESCE(status, 'unknown') AS status, COUNT(*) AS value
+      FROM cron_runs
+      WHERE run_at > datetime('now', '-7 day')
+      GROUP BY status
+    labels: [status]
+    value: value
+
+  - metric: cron_runs_by_job
+    type: gauge
+    db: db/cron_logs.db
+    description: Cron runs by job name (last 7 days)
+    sql: |
+      SELECT COALESCE(job_name, 'unknown') AS job, COUNT(*) AS value
+      FROM cron_runs
+      WHERE run_at > datetime('now', '-7 day')
+      GROUP BY job_name
+    labels: [job]
+    value: value
+
+  - metric: cron_exit_codes
+    type: gauge
+    db: db/cron_logs.db
+    description: Exit code distribution (last 7 days)
+    sql: |
+      SELECT COALESCE(CAST(exit_code AS TEXT), 'null') AS exit_code, COUNT(*) AS value
+      FROM cron_runs
+      WHERE run_at > datetime('now', '-7 day')
+      GROUP BY exit_code
+    labels: [exit_code]
+    value: value
+
+  # ─── inbox_captures.db ───────────────────────────────────────
+  - metric: inbox_captures_by_status
+    type: gauge
+    db: logs/inbox_captures.db
+    description: Inbox captures by status (last 7 days)
+    sql: |
+      SELECT COALESCE(status, 'unknown') AS status, COUNT(*) AS value
+      FROM inbox_captures
+      WHERE created_at > datetime('now', '-7 day')
+      GROUP BY status
+    labels: [status]
+    value: value
+
+  - metric: inbox_captures_by_category
+    type: gauge
+    db: logs/inbox_captures.db
+    description: Inbox captures by category (last 7 days)
+    sql: |
+      SELECT COALESCE(category, 'uncategorized') AS category, COUNT(*) AS value
+      FROM inbox_captures
+      WHERE created_at > datetime('now', '-7 day')
+      GROUP BY category
+    labels: [category]
+    value: value
+
+  - metric: inbox_avg_processing_seconds
+    type: gauge
+    db: logs/inbox_captures.db
+    description: Average inbox processing duration (last 7 days)
+    sql: |
+      SELECT ROUND(AVG(COALESCE(duration_seconds, 0)), 2) AS value
+      FROM inbox_captures
+      WHERE created_at > datetime('now', '-7 day')
+    labels: []
+    value: value
+
+  # ─── kanban.db / tasks ────────────────────────────────────────
+  - metric: kanban_tasks_by_status
+    type: gauge
+    db: kanban.db
+    description: Current tasks grouped by status
+    sql: |
+      SELECT COALESCE(status, 'unknown') AS status, COUNT(*) AS value
+      FROM tasks
+      GROUP BY status
+    labels: [status]
+    value: value
+
+  - metric: kanban_tasks_by_priority
+    type: gauge
+    db: kanban.db
+    description: Current tasks grouped by priority
+    sql: |
+      SELECT CAST(COALESCE(priority, 0) AS TEXT) AS priority, COUNT(*) AS value
+      FROM tasks
+      GROUP BY priority
+    labels: [priority]
+    value: value
+
+  - metric: kanban_completed_last_7d
+    type: gauge
+    db: kanban.db
+    description: Tasks completed in last 7 days
+    sql: |
+      SELECT COUNT(*) AS value
+      FROM tasks
+      WHERE status = 'completed'
+        AND completed_at > strftime('%s', datetime('now', '-7 day'))
+    labels: []
+    value: value
+
+  - metric: kanban_avg_completion_seconds
+    type: gauge
+    db: kanban.db
+    description: Average time from created to completed (seconds, last 7 days)
+    sql: |
+      SELECT ROUND(AVG(completed_at - created_at), 0) AS value
+      FROM tasks
+      WHERE status = 'completed'
+        AND completed_at > strftime('%s', datetime('now', '-7 day'))
+        AND created_at IS NOT NULL
+        AND completed_at IS NOT NULL
+    labels: []
+    value: value

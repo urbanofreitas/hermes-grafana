@@ -1,0 +1,189 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "panels": [],
+      "title": "System Resources",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 1},
+      "id": 2,
+      "options": {
+        "legend": {"calcs": ["mean"], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "100 - (avg by(instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "format": "time_series",
+          "legendFormat": "CPU %",
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "normal"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "unit": "decbytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 1},
+      "id": 3,
+      "options": {
+        "legend": {"calcs": ["mean"], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
+          "format": "time_series",
+          "legendFormat": "Used RAM",
+          "refId": "A"
+        },
+        {
+          "expr": "node_memory_MemAvailable_bytes",
+          "format": "time_series",
+          "legendFormat": "Available RAM",
+          "refId": "B"
+        }
+      ],
+      "title": "Memory",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 9},
+      "id": 4,
+      "options": {
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/\"} - node_filesystem_avail_bytes{mountpoint=\"/\"}) / node_filesystem_size_bytes{mountpoint=\"/\"}",
+          "format": "time_series",
+          "legendFormat": "Disk /",
+          "refId": "A"
+        },
+        {
+          "expr": "(node_filesystem_size_bytes{mountpoint=\"/home\"} - node_filesystem_avail_bytes{mountpoint=\"/home\"}) / node_filesystem_size_bytes{mountpoint=\"/home\"}",
+          "format": "time_series",
+          "legendFormat": "Disk /home",
+          "refId": "B"
+        }
+      ],
+      "title": "Disk Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "unit": "bps"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 9},
+      "id": 5,
+      "options": {
+        "legend": {"calcs": ["mean"], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "irate(node_network_receive_bytes_total{device!=\"lo\"}[5m]) * 8",
+          "format": "time_series",
+          "legendFormat": "RX {{device}}",
+          "refId": "A"
+        },
+        {
+          "expr": "irate(node_network_transmit_bytes_total{device!=\"lo\"}[5m]) * 8",
+          "format": "time_series",
+          "legendFormat": "TX {{device}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Network Throughput",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 40,
+  "tags": ["hermes", "system", "node"],
+  "time": {"from": "now-3h", "to": "now"},
+  "title": "System Resources",
+  "uid": "hermes-system",
+  "version": 1
+}

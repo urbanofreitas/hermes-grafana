@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers: []
+
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Host telemetry
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Hermes SQLite metrics bridge
+  - job_name: 'sqlite-exporter'
+    static_configs:
+      - targets: ['sqlite-exporter:9200']
+    scrape_interval: 15s

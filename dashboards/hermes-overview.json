@@ -1,0 +1,348 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "panels": [],
+      "title": "Sessions & Usage",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 1},
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_sessions_total",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "title": "Total Sessions",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"displayMode": "gradient"}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 10, "x": 4, "y": 1},
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "showValue": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_sessions_by_model",
+          "format": "time_series",
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Sessions by Model (7d)",
+      "type": "piechart"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "normal"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 10, "x": 14, "y": 1},
+      "id": 4,
+      "options": {
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_sessions_hourly_count",
+          "format": "time_series",
+          "legendFormat": "Sessions / Hour",
+          "refId": "A"
+        }
+      ],
+      "title": "Sessions per Hour",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
+      "id": 5,
+      "panels": [],
+      "title": "Cost & Tokens",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 6, "w": 12, "x": 0, "y": 7},
+      "id": 6,
+      "options": {
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_executions_daily_cost_usd",
+          "format": "time_series",
+          "legendFormat": "{{day}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Daily Cost (USD)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "drawStyle": "line",
+            "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "insertNulls": false, "lineInterpolation": "smooth", "lineWidth": 2, "pointSize": 5,
+            "scaleDistribution": {"type": "linear"}, "showPoints": "auto", "spanNulls": false,
+            "stacking": {"group": "A", "mode": "normal"}, "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 6, "w": 12, "x": 12, "y": 7},
+      "id": 7,
+      "options": {
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_executions_daily_tokens",
+          "format": "time_series",
+          "legendFormat": "Tokens ({{day}})",
+          "refId": "A"
+        }
+      ],
+      "title": "Daily Token Consumption",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 13},
+      "id": 8,
+      "panels": [],
+      "title": "Cron & Tasks",
+      "type": "row"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {"color": "red", "value": 0},
+              {"color": "yellow", "value": 0.5},
+              {"color": "green", "value": 0.95}
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 14},
+      "id": 9,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "sum(hermes_cron_runs_by_status{status=\"committed\"}) / sum(hermes_cron_runs_by_status)",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "title": "Cron Success Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"displayMode": "gradient"}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 14},
+      "id": 10,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "showValue": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_kanban_tasks_by_status",
+          "format": "time_series",
+          "legendFormat": "{{status}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Kanban Tasks by Status",
+      "type": "piechart"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 14},
+      "id": 11,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_kanban_completed_last_7d",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "title": "Tasks Completed (7d)",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "dthms"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 14},
+      "id": 12,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "orientation": "horizontal",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "hermes_kanban_avg_completion_seconds",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg Completion Time",
+      "type": "stat"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 40,
+  "tags": ["hermes", "overview"],
+  "time": {"from": "now-24h", "to": "now"},
+  "title": "Hermes Overview",
+  "uid": "hermes-overview",
+  "version": 1
+}

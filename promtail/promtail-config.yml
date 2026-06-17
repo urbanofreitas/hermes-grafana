@@ -1,0 +1,91 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: warn
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    batchsize: 1048576
+    batchwait: 1s
+
+scrape_configs:
+  # ── Hermes agent log (with rotation support) ────────────────────
+  - job_name: hermes-agent
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-agent
+          app: hermes
+          component: agent
+          __path__: /hermes/logs/agent.log*
+
+  # ── Hermes error log ──────────────────────────────────────────
+  - job_name: hermes-errors
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-errors
+          app: hermes
+          component: errors
+          level: error
+          __path__: /hermes/logs/errors.log*
+
+  # ── Hermes gateway log ───────────────────────────────────────
+  - job_name: hermes-gateway
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-gateway
+          app: hermes
+          component: gateway
+          __path__: /hermes/logs/gateway.log*
+
+  # ── WhatsApp bridge ──────────────────────────────────────────
+  - job_name: hermes-whatsapp
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-whatsapp
+          app: hermes
+          component: whatsapp
+          __path__: /hermes/whatsapp/bridge.log
+
+  # ── WebUI logs ─────────────────────────────────────────────
+  - job_name: hermes-webui
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-webui
+          app: hermes
+          component: webui
+          __path__: /hermes/webui/*.log
+
+  # ── Cron job outputs ───────────────────────────────────────
+  - job_name: hermes-cron
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-cron
+          app: hermes
+          component: cron
+          __path__: /hermes/cron/output/*.log
+
+  # ── Catch-all for any other *.log files under .hermes ────
+  - job_name: hermes-all-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: hermes-all-logs
+          app: hermes
+          component: misc
+          __path__: /hermes/**/*.log

@@ -1,0 +1,160 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "id": 1,
+      "panels": [],
+      "title": "Log Explorer",
+      "type": "row"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 1},
+      "id": 2,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "{app=\"hermes\"} |= \"error\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Hermes Errors",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 9},
+      "id": 3,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "{app=\"hermes\", component=\"agent\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Agent Log",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 9},
+      "id": 4,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "{app=\"hermes\", component=\"gateway\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Gateway Log",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 17},
+      "id": 5,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "{app=\"hermes\", component=\"whatsapp\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "WhatsApp Bridge Log",
+      "type": "logs"
+    },
+    {
+      "datasource": "Loki",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 17},
+      "id": 6,
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "12.0.1",
+      "targets": [
+        {
+          "expr": "{app=\"hermes\", component=\"cron\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Cron Log",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 40,
+  "tags": ["hermes", "logs"],
+  "time": {"from": "now-1h", "to": "now"},
+  "title": "Log Explorer",
+  "uid": "hermes-logs",
+  "version": 1
+}

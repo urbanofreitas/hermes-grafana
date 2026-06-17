@@ -1,0 +1,15 @@
+.env
+*.swp
+*.swo
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+volumes/
+data/
+*.db
+*.sqlite
+*.sqlite3
+prometheus-data/
+loki-data/
+promtail-data/
+grafana-data/
