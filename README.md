@@ -65,3 +65,11 @@ Search them in Grafana Explore → Loki datasource.
 ## License
 
 MIT
+
+---
+
+## Related Projects
+
+- **Hermes AI** — The main Hermes Agent runtime that this stack observes.  
+  Repository: https://github.com/urbanofreitas/Hermes_AI  
+  Cross-reference guide: `guides/hermes-grafana-observability.md`
